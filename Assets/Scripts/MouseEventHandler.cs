@@ -5,12 +5,12 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 
-public class Floor : MonoBehaviour, IPointerDownHandler
+public class MouseEventHandler : MonoBehaviour, IPointerDownHandler
 {
-    public static event Action<Vector3> OnFloorClicked;
+    public static event Action<Vector3> OnGameObjectClicked;
 	public void OnPointerDown(PointerEventData eventData)
 	{
-        OnFloorClicked?.Invoke(eventData.pointerPressRaycast.worldPosition);
+        OnGameObjectClicked?.Invoke(eventData.pointerPressRaycast.worldPosition);
 	}
 
 

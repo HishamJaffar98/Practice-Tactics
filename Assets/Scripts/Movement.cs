@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Unit : MonoBehaviour
+public class Movement : MonoBehaviour
 {
 	enum MovementStates { Moving, Idle };
 
 	#region Variables
 	private MovementStates currentMovementState = MovementStates.Idle;
 	private Vector3 targetPosition;
-	[SerializeField] private float speed = 10f;
+	[SerializeField] private float movementSpeed = 10f;
 	#endregion
 
 	#region Properties
@@ -30,11 +30,11 @@ public class Unit : MonoBehaviour
 	#region UnityCycleFucntions
 	private void OnEnable()
 	{
-		Floor.OnFloorClicked += SetMovementParameters;
+		MouseEventHandler.OnGameObjectClicked += SetMovementParameters;
 	}
 	private void OnDisable()
 	{
-		Floor.OnFloorClicked -= SetMovementParameters;
+		MouseEventHandler.OnGameObjectClicked -= SetMovementParameters;
 	}
 
 	void Start()
@@ -53,11 +53,10 @@ public class Unit : MonoBehaviour
 	{
 		if (currentMovementState == MovementStates.Moving)
 		{
-			transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed*Time.deltaTime);
+			transform.position = Vector3.MoveTowards(transform.position, targetPosition, movementSpeed*Time.deltaTime);
 			if(Vector3.Distance(transform.position, targetPosition)==0)
 			{
 				currentMovementState = MovementStates.Idle;
-				Debug.Log("StoppedMoving");
 			}
 		}
 	}
