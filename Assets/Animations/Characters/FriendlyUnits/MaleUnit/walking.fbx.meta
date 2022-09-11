@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: 65cb27b64a65fed4694643752fbcaa09
+guid: 93e276f6c1370ce40991e49e6a86b176
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable:
   - first:
-      74: 8134485336303234109
-    second: rifle aiming idle
+      74: -3889830323219305035
+    second: walking
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -36,23 +36,23 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: rifle aiming idle
+      name: walking
       takeName: mixamo.com
       internalID: 0
       firstFrame: 0
-      lastFrame: 93
+      lastFrame: 41
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
       loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
+      keepOriginalOrientation: 1
       keepOriginalPositionY: 1
       keepOriginalPositionXZ: 0
       heightFromFeet: 0

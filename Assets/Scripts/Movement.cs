@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 using UnityEngine.EventSystems;
 
 public class Movement : MonoBehaviour
@@ -13,6 +14,10 @@ public class Movement : MonoBehaviour
 	[SerializeField] private float movementSpeed = 10f;
 	#endregion
 
+	#region Events
+	public static event Action OnCharacterMoving;
+	public static event Action OnCharacterIdle;
+	#endregion
 	#region Properties
 	public Vector3 TargetPosition
 	{
@@ -58,6 +63,7 @@ public class Movement : MonoBehaviour
 			if(Vector3.Distance(transform.position, targetPosition)==0)
 			{
 				currentMovementState = MovementStates.Idle;
+				OnCharacterIdle?.Invoke();
 			}
 		}
 	}
@@ -70,6 +76,7 @@ public class Movement : MonoBehaviour
 		}
 		TargetPosition = new Vector3(targetPosition.x, 0f, targetPosition.z);
 		currentMovementState = MovementStates.Moving;
+		OnCharacterMoving?.Invoke();
 	}
 	#endregion
 }
