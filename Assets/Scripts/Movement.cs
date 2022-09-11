@@ -27,19 +27,20 @@ public class Movement : MonoBehaviour
 	}
 	#endregion
 
-	#region UnityCycleFucntions
+	#region Unity Cycle Fucntions
 	private void OnEnable()
 	{
-		MouseEventHandler.OnGameObjectClicked += SetMovementParameters;
+		MouseInputDetector.OnGameObjectClicked += SetMovementParameters;
 	}
 	private void OnDisable()
 	{
-		MouseEventHandler.OnGameObjectClicked -= SetMovementParameters;
+		MouseInputDetector.OnGameObjectClicked -= SetMovementParameters;
 	}
 
+	
 	void Start()
     {
-        
+
     }
 
     void Update()
@@ -48,7 +49,7 @@ public class Movement : MonoBehaviour
 	}
 	#endregion
 
-	#region PrivateFunctions
+	#region Private Functions
 	private void Move()
 	{
 		if (currentMovementState == MovementStates.Moving)
@@ -67,8 +68,7 @@ public class Movement : MonoBehaviour
 		{
 			return;
 		}
-
-		TargetPosition = targetPosition;
+		TargetPosition = new Vector3(targetPosition.x, 0f, targetPosition.z);
 		currentMovementState = MovementStates.Moving;
 	}
 	#endregion
