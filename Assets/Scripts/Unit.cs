@@ -15,6 +15,7 @@ public class Unit : MonoBehaviour
 	private MovementStates currentMovementState = MovementStates.Idle;
 	private Vector3 targetPosition;
 	private Vector3 targetDirection;
+	private GridPosition currentGridPosition;
 	bool isSelected = false;
 
 	#endregion
@@ -63,11 +64,14 @@ public class Unit : MonoBehaviour
 
 	#region Unity Cycle Fucntions
 
-	void Start()
+	private void Awake()
 	{
 		MouseInputDetector.OnFloorClicked += SetMovementParameters;
 		UnitSelector.Instance.OnSelectedUnitChanged += SetUnitAsSelected;
+		currentGridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
+		LevelGrid.Instance.AddUnitAtGridPosition(currentGridPosition, this);
 	}
+
 	private void OnDisable()
 	{
 		MouseInputDetector.OnFloorClicked -= SetMovementParameters;
@@ -77,6 +81,12 @@ public class Unit : MonoBehaviour
     void Update()
 	{
 		Move();
+		GridPosition newGridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
+		if(currentGridPosition!=newGridPosition)
+		{
+			LevelGrid.Instance.UnitMoveGridPosition(this, currentGridPosition, newGridPosition);
+			currentGridPosition = newGridPosition;
+		}
 	}
 	#endregion
 

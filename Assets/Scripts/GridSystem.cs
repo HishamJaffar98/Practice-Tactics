@@ -70,7 +70,7 @@ public class GridSystem
 			for (int z = 0; z < Height; z++)
 			{
 				GridPosition newGridPosition = new GridPosition(x,z);
-				gridObjectCollection[x,z] = new GridObject(this, newGridPosition);
+				gridObjectCollection[x, z] = new GridObject(this, newGridPosition);
 			}
 		}
 	}
@@ -109,15 +109,15 @@ public class GridSystem
 		return new GridPosition(Mathf.FloorToInt(worldPosition.x / CellSize), Mathf.FloorToInt(worldPosition.z / CellSize));
 	}
 
-	public void DebugObjects(Transform debugPrefab)
+	public void CreateDebugObjects(Transform debugPrefab)
 	{
 		for (int x = 0; x < Width; x++)
 		{
 			for (int z = 0; z < Height; z++)
 			{
 				GridPosition newGridPos = new GridPosition(x, z);
-				Transform debugTransformText = GameObject.Instantiate(debugPrefab, GetWorldPosition(newGridPos), Quaternion.identity).GetChild(0);
-				debugTransformText.GetComponent<TextMeshPro>().text = GetGridObject(new GridPosition(x,z)).ToString(); ;
+				Transform newGridDebugObject = GameObject.Instantiate(debugPrefab, GetWorldPosition(newGridPos), Quaternion.identity);
+				newGridDebugObject.GetComponent<GridDebugObject>().SetGridObject(GetGridObject(new GridPosition(x,z)));
 			}
 		}
 	}
