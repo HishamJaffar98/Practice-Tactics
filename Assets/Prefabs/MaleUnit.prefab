@@ -1543,6 +1543,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1766610724542088199}
   - component: {fileID: 1766610724542088198}
+  - component: {fileID: 1676922324}
   - component: {fileID: 214824985}
   m_Layer: 6
   m_Name: MaleUnit
@@ -1580,10 +1581,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19404240ff0d3d0469ead07b1bafc6c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementSpeed: 10
-  rotationSpeed: 30
-  unitAnimator: {fileID: 1860002885753963066}
   unitSelectVisual: {fileID: 1033001300}
+--- !u!114 &1676922324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1766610724542088196}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8aa5a2a44c8392c439325f55b6826e89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movementSpeed: 10
+  rotationSpeed: 10
+  moveRange: 2
+  unitAnimator: {fileID: 1860002885753963066}
 --- !u!65 &214824985
 BoxCollider:
   m_ObjectHideFlags: 0

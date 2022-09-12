@@ -29,7 +29,6 @@ public class LevelGrid : MonoBehaviour
         {
             Instance = this;
         }
-
         newGridSystem = new GridSystem(10, 10, 2f);
     }
 
@@ -61,5 +60,17 @@ public class LevelGrid : MonoBehaviour
         RemoveUnitAtGridPosition(fromGridPosition,unit);
         AddUnitAtGridPosition(toGridPosition,unit);
     }
+  
+    public bool HasUnitOnGridPosition(GridPosition gridPosition)
+	{
+        GridObject newGridObject = newGridSystem.GetGridObject(gridPosition);
+        return newGridObject.HasUnitList();
+    }
+
     public GridPosition GetGridPosition(Vector3 worldPosition) => newGridSystem.GetGridPosition(worldPosition);
+    public Vector3 GetWorldPosition(GridPosition gridPosition) => newGridSystem.GetWorldPosition(gridPosition);
+    public bool IsValidGridPosition(GridPosition gridPosition) => newGridSystem.IsValidGridPosition(gridPosition);
+    public int GetWidth() => newGridSystem.Width;
+    public int GetHeight() => newGridSystem.Height;
+
 }

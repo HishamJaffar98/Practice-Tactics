@@ -124,7 +124,23 @@ public class GridSystem
 
 	public GridObject GetGridObject(GridPosition gridPosition)
 	{
-		return gridObjectCollection[gridPosition.x,gridPosition.z];
+		if(gridPosition.x<Width && gridPosition.x>=0 && gridPosition.z<Height && gridPosition.z>=0)
+		{
+			GridObject newGridObject = gridObjectCollection[gridPosition.x, gridPosition.z];
+			return newGridObject;
+		}
+		return null;
+	}
+
+	public bool IsValidGridPosition(GridPosition gridPosition)
+	{
+		if (gridPosition.x < Width
+			&& gridPosition.x >= 0
+			&& gridPosition.z < Height
+			&& gridPosition.z >= 0)
+			return true;
+		else
+			return false;
 	}
 	#endregion
 }

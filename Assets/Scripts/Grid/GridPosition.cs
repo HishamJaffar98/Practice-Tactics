@@ -42,6 +42,7 @@ public struct GridPosition : IEquatable<GridPosition>
 	}
 	#endregion
 
+	#region Custom operators
 	public static bool operator !=(GridPosition firstGridPosition, GridPosition secondGridPosition)
 	{
 		if (firstGridPosition.x != secondGridPosition.x || firstGridPosition.z != secondGridPosition.z)
@@ -65,4 +66,11 @@ public struct GridPosition : IEquatable<GridPosition>
 			return false;
 		}
 	}
+
+	public static GridPosition operator +(GridPosition A, GridPosition B)
+	{
+		GridPosition resultGridPosition = new GridPosition(A.x + B.x, A.z + B.z);
+		return resultGridPosition;
+	}
+	#endregion
 }

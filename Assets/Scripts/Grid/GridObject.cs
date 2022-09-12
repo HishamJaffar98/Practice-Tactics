@@ -46,6 +46,15 @@ public class GridObject
 	{
 		return unitList;
 	}
+
+	public bool HasUnitList()
+	{
+		if(unitList.Count>0)
+		{
+			return true;
+		}
+		return false;
+	}
 	#endregion
 
 	public override string ToString()
