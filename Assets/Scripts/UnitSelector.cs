@@ -34,7 +34,6 @@ public class UnitSelector : MonoBehaviour
         MouseInputDetector.OnUnitClicked += SelectUnit;
     }
 
-    // Update is called once per frame
     void OnDisable()
     {
         MouseInputDetector.OnUnitClicked -= SelectUnit;
