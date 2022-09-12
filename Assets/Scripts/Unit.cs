@@ -65,12 +65,12 @@ public class Unit : MonoBehaviour
 
 	void Start()
 	{
-		MouseInputDetector.Instance.OnFloorClicked += SetMovementParameters;
+		MouseInputDetector.OnFloorClicked += SetMovementParameters;
 		UnitSelector.Instance.OnSelectedUnitChanged += SetUnitAsSelected;
 	}
 	private void OnDisable()
 	{
-		MouseInputDetector.Instance.OnFloorClicked -= SetMovementParameters;
+		MouseInputDetector.OnFloorClicked -= SetMovementParameters;
 		UnitSelector.Instance.OnSelectedUnitChanged -= SetUnitAsSelected;
 	}
 

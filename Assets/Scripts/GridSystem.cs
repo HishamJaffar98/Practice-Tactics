@@ -58,6 +58,7 @@ public class GridSystem
 		CellSize = cellSize;
 		gridObjectCollection = new GridObject[Width, Height];
 		CreateGridObjects();
+		DebugGridDraw();
 	}
 	#endregion
 
@@ -73,12 +74,34 @@ public class GridSystem
 			}
 		}
 	}
+
+	private void DebugGridDraw()
+	{
+		for (int x = 0; x < Width; x++)
+		{
+			for (int z = 0; z < Height; z++)
+			{
+				GridPosition newGridPos = new GridPosition(x, z) ; 
+				Debug.DrawLine(GetWorldPosition(newGridPos), GetWorldPosition(newGridPos) + Vector3.right*CellSize, Color.red, 10000);
+				Debug.DrawLine(GetWorldPosition(newGridPos), GetWorldPosition(newGridPos) + Vector3.forward*CellSize, Color.red, 10000);
+				if(x==Width-1)
+				{
+					Debug.DrawLine(GetWorldPosition(new GridPosition(x+1,z)), GetWorldPosition(new GridPosition(x + 1, z)) + Vector3.forward * CellSize, Color.red, 10000);
+				}
+				if(z==Height-1)
+				{
+					Debug.DrawLine(GetWorldPosition(new GridPosition(x, z + 1)), GetWorldPosition(new GridPosition(x, z + 1)) + Vector3.right * CellSize, Color.red, 10000);
+				}
+
+			}
+		}
+	}
 	#endregion
 
 	#region Public Functions
-	public Vector3 GetWorldPosition(int x, int z)
+	public Vector3 GetWorldPosition(GridPosition gridPosition)
 	{
-		return new Vector3(x, 0f, z) * CellSize;
+		return new Vector3(gridPosition.x, 0f, gridPosition.z) * CellSize;
 	}
 
 	public GridPosition GetGridPosition (Vector3 worldPosition)
@@ -92,10 +115,16 @@ public class GridSystem
 		{
 			for (int z = 0; z < Height; z++)
 			{
-				Transform debugTransform = GameObject.Instantiate(debugPrefab, GetWorldPosition(x, z), Quaternion.identity);
-				debugTransform.gameObject.GetComponent<TextMeshPro>().text = "x:" + x + "|z:" + z;
+				GridPosition newGridPos = new GridPosition(x, z);
+				Transform debugTransformText = GameObject.Instantiate(debugPrefab, GetWorldPosition(newGridPos), Quaternion.identity).GetChild(0);
+				debugTransformText.GetComponent<TextMeshPro>().text = GetGridObject(new GridPosition(x,z)).ToString(); ;
 			}
 		}
+	}
+
+	public GridObject GetGridObject(GridPosition gridPosition)
+	{
+		return gridObjectCollection[gridPosition.x,gridPosition.z];
 	}
 	#endregion
 }

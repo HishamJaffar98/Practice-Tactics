@@ -9,6 +9,20 @@ public class GridObject
 	private GridPosition gridPosition;
 	#endregion
 
+	#region Properties
+	public GridPosition GridPosition
+	{
+		set
+		{
+			gridPosition = value;
+		}
+		get
+		{
+			return gridPosition;
+		}
+	}
+	#endregion
+
 	#region Constructor
 	public GridObject(GridSystem gridSystem, GridPosition gridPosition)
 	{
@@ -17,4 +31,8 @@ public class GridObject
 	}
 	#endregion
 
+	public override string ToString()
+	{
+		return GridPosition.ToString();
+	}
 }

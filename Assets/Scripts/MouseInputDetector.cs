@@ -9,27 +9,14 @@ public class MouseInputDetector : MonoBehaviour
 {
 	#region Variables
 	[SerializeField] private LayerMask mouseDetectLayerMask;
-	public static MouseInputDetector Instance { get; private set; }
 	#endregion
 
 	#region Events
-	public event Action<Vector3> OnFloorClicked;
-	public event Action<Unit> OnUnitClicked;
+	public static event Action<Vector3> OnFloorClicked;
+	public static event Action<Unit> OnUnitClicked;
 	#endregion
 
 	#region Unity Cycle Functions
-	void Awake()
-    {
-		if (Instance != null)
-		{
-			Destroy(this);
-		}
-		else
-		{
-			Instance = this;
-		}
-	}
-
     void Update()
     {
         if(Input.GetMouseButtonDown(0))

@@ -20,7 +20,7 @@ public struct GridPosition
 	#region Public Functions
 	public override string ToString()
 	{
-		return "[x: " + x + "||z: " + z +"]";
+		return "x:" + x + "|z:" + z;
 	}
 	#endregion
 }

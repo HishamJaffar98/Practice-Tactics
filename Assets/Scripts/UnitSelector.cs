@@ -31,12 +31,14 @@ public class UnitSelector : MonoBehaviour
 	}
 	void OnEnable()
     {
-        MouseInputDetector.Instance.OnUnitClicked += SelectUnit;
+        Debug.Log("UnitSelectorOnEnabledCalled");
+
+        MouseInputDetector.OnUnitClicked += SelectUnit;
     }
 
     void OnDisable()
     {
-        MouseInputDetector.Instance.OnUnitClicked -= SelectUnit;
+        MouseInputDetector.OnUnitClicked -= SelectUnit;
     }
 
     private void SelectUnit(Unit unit)

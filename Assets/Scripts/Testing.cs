@@ -6,7 +6,7 @@ public class Testing : MonoBehaviour
 {
     private GridSystem newGridSystem;
     [SerializeField] private Transform gridDebugObjectPrefab;
-    void Awake()
+    void Start()
     {
         newGridSystem = new GridSystem(10, 10,2f);
         newGridSystem.DebugObjects(gridDebugObjectPrefab);
