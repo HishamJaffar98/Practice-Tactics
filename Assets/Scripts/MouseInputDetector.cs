@@ -9,24 +9,24 @@ public class MouseInputDetector : MonoBehaviour
 {
 	#region Variables
 	[SerializeField] private LayerMask mouseDetectLayerMask;
-	public static MouseInputDetector instance;
+	public static MouseInputDetector Instance { get; private set; }
 	#endregion
 
 	#region Events
-	public static event Action<Vector3> OnFloorClicked;
-	public static event Action<Unit> OnUnitClicked;
+	public event Action<Vector3> OnFloorClicked;
+	public event Action<Unit> OnUnitClicked;
 	#endregion
 
 	#region Unity Cycle Functions
 	void Awake()
     {
-		if (instance != null)
+		if (Instance != null)
 		{
 			Destroy(this);
 		}
 		else
 		{
-			instance = this;
+			Instance = this;
 		}
 	}
 
@@ -51,7 +51,7 @@ public class MouseInputDetector : MonoBehaviour
 	#endregion
 
 	#region Private Functions
-	private RaycastHit GetInformationOfValidHitObject()
+	public RaycastHit GetInformationOfValidHitObject()
 	{
 		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 		Physics.Raycast(ray, out RaycastHit hit, float.MaxValue, mouseDetectLayerMask);

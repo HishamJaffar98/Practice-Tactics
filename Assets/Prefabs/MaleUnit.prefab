@@ -1581,7 +1581,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementSpeed: 10
-  rotationSpeed: 15
+  rotationSpeed: 30
   unitAnimator: {fileID: 1860002885753963066}
   unitSelectVisual: {fileID: 1033001300}
 --- !u!65 &214824985

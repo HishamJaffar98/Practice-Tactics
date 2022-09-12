@@ -65,12 +65,12 @@ public class Unit : MonoBehaviour
 
 	void Start()
 	{
-		MouseInputDetector.OnFloorClicked += SetMovementParameters;
+		MouseInputDetector.Instance.OnFloorClicked += SetMovementParameters;
 		UnitSelector.Instance.OnSelectedUnitChanged += SetUnitAsSelected;
 	}
 	private void OnDisable()
 	{
-		MouseInputDetector.OnFloorClicked -= SetMovementParameters;
+		MouseInputDetector.Instance.OnFloorClicked -= SetMovementParameters;
 		UnitSelector.Instance.OnSelectedUnitChanged -= SetUnitAsSelected;
 	}
 
@@ -86,7 +86,7 @@ public class Unit : MonoBehaviour
 		if (currentMovementState == MovementStates.Moving)
 		{
 			transform.position = Vector3.MoveTowards(transform.position, TargetPosition, movementSpeed*Time.deltaTime);
-			transform.forward = Vector3.MoveTowards(transform.forward, TargetDirection, rotationSpeed * Time.deltaTime);
+			transform.forward = Vector3.Lerp(transform.forward, TargetDirection, rotationSpeed * Time.deltaTime);
 			if(Vector3.Distance(transform.position, TargetPosition) ==0)
 			{
 				currentMovementState = MovementStates.Idle;
