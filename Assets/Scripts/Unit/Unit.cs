@@ -6,7 +6,6 @@ using UnityEngine.EventSystems;
 
 public class Unit : MonoBehaviour
 {
-
 	#region Structs
 	private GridPosition currentGridPosition;
 	#endregion
@@ -19,6 +18,7 @@ public class Unit : MonoBehaviour
 
 	#region Referenced Components
 	[SerializeField] UnitSelectVisual unitSelectVisual;
+	private HealthSystem healthSystem;
 	private MoveAction moveAction;
 	private SpinAction spinAction;
 	private BaseAction[] actionArray;
@@ -72,10 +72,12 @@ public class Unit : MonoBehaviour
 	{
 		ActionSystem.Instance.OnSelectedUnitChanged += ToggleUnitSelectVisual;
 		TurnSystem.Instance.OnTurnChanged += TurnSystem_OnTurnChanged;
+		healthSystem.OnDead += HealthSystem_OnDead;
 	}
 	private void Awake()
 	{
 		currentGridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
+		healthSystem = GetComponent<HealthSystem>();
 		moveAction = GetComponent<MoveAction>();
 		spinAction = GetComponent<SpinAction>();
 		actionArray = GetComponents<BaseAction>();
@@ -100,6 +102,7 @@ public class Unit : MonoBehaviour
 	{
 		ActionSystem.Instance.OnSelectedUnitChanged -= ToggleUnitSelectVisual;
 		TurnSystem.Instance.OnTurnChanged -= TurnSystem_OnTurnChanged;
+		healthSystem.OnDead -= HealthSystem_OnDead;
 	}
 
 	private void SpendActionPoints(int amount)
@@ -163,9 +166,14 @@ public class Unit : MonoBehaviour
 		return actionPoints;
 	}
 
-	public void Damage()
+	public void Damage(int damageAmount)
 	{
-		Debug.Log(transform + " damaged!");
+		healthSystem.Damage(damageAmount);
+	}
+	private void HealthSystem_OnDead()
+	{
+		LevelGrid.Instance.RemoveUnitAtGridPosition(currentGridPosition, this);
+		Destroy(gameObject);
 	}
 
 	public Vector3 GetWorldPosition()
