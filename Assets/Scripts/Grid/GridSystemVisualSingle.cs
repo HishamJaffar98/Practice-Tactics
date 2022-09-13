@@ -9,8 +9,9 @@ public class GridSystemVisualSingle : MonoBehaviour
 		mesh.enabled = false;
 	}
 
-	public void Show()
+	public void Show(Material material)
 	{
 		mesh.enabled = true;
+		mesh.material = material;
 	}
 }

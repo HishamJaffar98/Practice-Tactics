@@ -14,13 +14,16 @@ public class Unit : MonoBehaviour
 	private int actionPoints = ACTION_POINTS_MAX;
 	[SerializeField] private bool isEnemy;
 
-	public static event Action OnAnyActionPointsChanged;
+	public static Action OnAnyActionPointsChanged;
+	public static EventHandler OnAnyUnitSpawned;
+	public static EventHandler OnAnyUnitDead;
 
 	#region Referenced Components
 	[SerializeField] UnitSelectVisual unitSelectVisual;
 	private HealthSystem healthSystem;
 	private MoveAction moveAction;
 	private SpinAction spinAction;
+	private ShootAction shootAction;
 	private BaseAction[] actionArray;
 	#endregion
 
@@ -38,6 +41,14 @@ public class Unit : MonoBehaviour
 		get
 		{
 			return spinAction;
+		}
+	}
+
+	public ShootAction ShootActionComponent
+	{
+		get
+		{
+			return shootAction;
 		}
 	}
 
@@ -80,11 +91,13 @@ public class Unit : MonoBehaviour
 		healthSystem = GetComponent<HealthSystem>();
 		moveAction = GetComponent<MoveAction>();
 		spinAction = GetComponent<SpinAction>();
+		shootAction = GetComponent<ShootAction>();
 		actionArray = GetComponents<BaseAction>();
 	}
 
 	private void Start()
 	{
+		OnAnyUnitSpawned?.Invoke(this, EventArgs.Empty);
 		LevelGrid.Instance.AddUnitAtGridPosition(currentGridPosition, this);
 	}
 
@@ -93,8 +106,9 @@ public class Unit : MonoBehaviour
 		GridPosition newGridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
 		if(currentGridPosition!=newGridPosition)
 		{
-			LevelGrid.Instance.UnitMoveGridPosition(this, currentGridPosition, newGridPosition);
+			GridPosition oldGridPosition = currentGridPosition;
 			currentGridPosition = newGridPosition;
+			LevelGrid.Instance.UnitMoveGridPosition(this, oldGridPosition, newGridPosition);
 		}
 	}
 
@@ -174,10 +188,17 @@ public class Unit : MonoBehaviour
 	{
 		LevelGrid.Instance.RemoveUnitAtGridPosition(currentGridPosition, this);
 		Destroy(gameObject);
+		OnAnyUnitDead?.Invoke(this, EventArgs.Empty);
 	}
 
 	public Vector3 GetWorldPosition()
 	{
 		return transform.position;
 	}
+
+	public float GetHealthNormalized()
+	{
+		return healthSystem.GetHealthNormalized();
+	}
+
 }

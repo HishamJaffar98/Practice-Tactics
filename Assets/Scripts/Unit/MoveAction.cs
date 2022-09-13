@@ -108,10 +108,10 @@ public class MoveAction : BaseAction
 	}
 	public override void TakeAction(GridPosition gridPosition, actionDelegate onActionComplete)
 	{
-		ActionStart(onActionComplete);
 		TargetPosition = ConvertTargetPositionToMiddleOfCell(LevelGrid.Instance.GetWorldPosition(gridPosition));
 		TargetDirection = (TargetPosition - transform.position).normalized;
 		OnStartMoving?.Invoke();
+		ActionStart(onActionComplete);
 	}
 
 	private Vector3 ConvertTargetPositionToMiddleOfCell(Vector3 targetPosition)
@@ -122,6 +122,15 @@ public class MoveAction : BaseAction
 	public override string GetActionName()
 	{
 		return "Move";
+	}
+	public override EnemyAIAction GetEnemyAIAction(GridPosition gridPosition)
+	{
+		int targetCountAtGridPosition = unit.ShootActionComponent.GetTargetCountAtPosition(gridPosition);
+		return new EnemyAIAction
+		{
+			gridPosition = gridPosition,
+			actionValue = targetCountAtGridPosition * 10,
+		};
 	}
 
 	#endregion
