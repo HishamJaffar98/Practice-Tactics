@@ -21,37 +21,10 @@ public class Unit : MonoBehaviour
 	#region Referenced Components
 	[SerializeField] UnitSelectVisual unitSelectVisual;
 	private HealthSystem healthSystem;
-	private MoveAction moveAction;
-	private SpinAction spinAction;
-	private ShootAction shootAction;
 	private BaseAction[] actionArray;
 	#endregion
 
 	#region Properties
-	public MoveAction MoveActionComponent
-	{
-		get
-		{
-			return moveAction;
-		}
-	}
-
-	public SpinAction SpinActionComponent
-	{
-		get
-		{
-			return spinAction;
-		}
-	}
-
-	public ShootAction ShootActionComponent
-	{
-		get
-		{
-			return shootAction;
-		}
-	}
-
 	public GridPosition UnitCurrentGridPosition
 	{
 		get
@@ -89,9 +62,6 @@ public class Unit : MonoBehaviour
 	{
 		currentGridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
 		healthSystem = GetComponent<HealthSystem>();
-		moveAction = GetComponent<MoveAction>();
-		spinAction = GetComponent<SpinAction>();
-		shootAction = GetComponent<ShootAction>();
 		actionArray = GetComponents<BaseAction>();
 	}
 
@@ -175,7 +145,19 @@ public class Unit : MonoBehaviour
 		}
 	}
 
-	public int GetActionPoints()
+	public T GetAction<T>() where T : BaseAction
+	{
+		foreach (BaseAction baseAction in ActionArray)
+		{
+			if (baseAction is T)
+			{
+				return (T)baseAction;
+			}
+		}
+		return null;
+	}
+
+public int GetActionPoints()
 	{
 		return actionPoints;
 	}

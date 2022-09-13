@@ -72,5 +72,10 @@ public struct GridPosition : IEquatable<GridPosition>
 		GridPosition resultGridPosition = new GridPosition(A.x + B.x, A.z + B.z);
 		return resultGridPosition;
 	}
+	public static GridPosition operator -(GridPosition A, GridPosition B)
+	{
+		GridPosition resultGridPosition = new GridPosition(A.x - B.x, A.z - B.z);
+		return resultGridPosition;
+	}
 	#endregion
 }

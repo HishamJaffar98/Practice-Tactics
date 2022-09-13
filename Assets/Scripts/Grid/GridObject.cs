@@ -5,7 +5,7 @@ using UnityEngine;
 public class GridObject
 {
 	#region Variables
-	private GridSystem gridSystem;
+	private GridSystem<GridObject> gridSystem;
 	private GridPosition gridPosition;
 	private List<Unit> unitList;
 	#endregion
@@ -25,7 +25,7 @@ public class GridObject
 	#endregion
 
 	#region Constructor
-	public GridObject(GridSystem gridSystem, GridPosition gridPosition)
+	public GridObject(GridSystem<GridObject> gridSystem, GridPosition gridPosition)
 	{
 		this.gridSystem = gridSystem;
 		this.gridPosition = gridPosition;
