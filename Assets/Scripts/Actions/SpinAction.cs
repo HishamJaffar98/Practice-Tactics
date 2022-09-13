@@ -17,15 +17,13 @@ public class SpinAction : BaseAction
         totalSpinAmount += spinAmount * Time.deltaTime;
         if (totalSpinAmount >= 360f)
         {
-            isActionActive = false;
-            OnActionComplete?.Invoke();
+            ActionComplete();
         }
     }
 
     public override void TakeAction(GridPosition gridPosition, actionDelegate onActionComplete)
     {
-        this.OnActionComplete = onActionComplete;
-        isActionActive = true;
+        ActionStart(onActionComplete);
         totalSpinAmount = 0f;
     }
 

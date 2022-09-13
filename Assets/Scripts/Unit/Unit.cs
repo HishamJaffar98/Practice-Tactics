@@ -11,7 +11,11 @@ public class Unit : MonoBehaviour
 	private GridPosition currentGridPosition;
 	#endregion
 
-	private int actionPoints = 2;
+	private const int ACTION_POINTS_MAX = 2;
+	private int actionPoints = ACTION_POINTS_MAX;
+	[SerializeField] private bool isEnemy;
+
+	public static event Action OnAnyActionPointsChanged;
 
 	#region Referenced Components
 	[SerializeField] UnitSelectVisual unitSelectVisual;
@@ -52,6 +56,14 @@ public class Unit : MonoBehaviour
 			return actionArray;
 		}
 	}
+
+	public bool IsEnemy
+	{
+		get
+		{
+			return isEnemy;
+		}
+	}
 	#endregion
 
 	#region Unity Cycle Fucntions
@@ -59,6 +71,7 @@ public class Unit : MonoBehaviour
 	private void OnEnable()
 	{
 		ActionSystem.Instance.OnSelectedUnitChanged += ToggleUnitSelectVisual;
+		TurnSystem.Instance.OnTurnChanged += TurnSystem_OnTurnChanged;
 	}
 	private void Awake()
 	{
@@ -86,11 +99,13 @@ public class Unit : MonoBehaviour
 	private void OnDisable()
 	{
 		ActionSystem.Instance.OnSelectedUnitChanged -= ToggleUnitSelectVisual;
+		TurnSystem.Instance.OnTurnChanged -= TurnSystem_OnTurnChanged;
 	}
 
 	private void SpendActionPoints(int amount)
 	{
 		actionPoints -= amount;
+		OnAnyActionPointsChanged?.Invoke();
 	}
 	#endregion
 
@@ -104,6 +119,16 @@ public class Unit : MonoBehaviour
 		else
 		{
 			unitSelectVisual.ToggleSelectedVisual(false);
+		}
+	}
+	
+	private void TurnSystem_OnTurnChanged()
+	{
+		if ((IsEnemy && !TurnSystem.Instance.IsPlayerTurn) ||
+		   (!IsEnemy && TurnSystem.Instance.IsPlayerTurn))
+		{
+			actionPoints = ACTION_POINTS_MAX;
+			OnAnyActionPointsChanged?.Invoke();
 		}
 	}
 	#endregion
@@ -136,5 +161,15 @@ public class Unit : MonoBehaviour
 	public int GetActionPoints()
 	{
 		return actionPoints;
+	}
+
+	public void Damage()
+	{
+		Debug.Log(transform + " damaged!");
+	}
+
+	public Vector3 GetWorldPosition()
+	{
+		return transform.position;
 	}
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,11 +15,10 @@ public class MoveAction : BaseAction
 	#region Structs
 	private Vector3 targetPosition;
 	private Vector3 targetDirection;
-	#endregion 
-
-	#region Cached Components
-	[SerializeField] private Animator unitAnimator;
 	#endregion
+
+	public event Action OnStartMoving;
+	public event Action OnStopMoving;
 
 	#region Unity Cycle Functions
 	private void Start()
@@ -71,10 +71,9 @@ public class MoveAction : BaseAction
 		transform.forward = Vector3.Lerp(transform.forward, TargetDirection, rotationSpeed * Time.deltaTime);
 		if (Vector3.Distance(transform.position, TargetPosition) == 0)
 		{
-			unitAnimator.SetBool(AnimationParameterManager.isMoving, false);
-			isActionActive = false;
+			OnStopMoving?.Invoke();
+			ActionComplete();
 			ValidGridPositionList = GetValidActionGridPositionList();
-			OnActionComplete?.Invoke();
 		}
 	}
 	#endregion
@@ -109,11 +108,10 @@ public class MoveAction : BaseAction
 	}
 	public override void TakeAction(GridPosition gridPosition, actionDelegate onActionComplete)
 	{
-		this.OnActionComplete = onActionComplete;
+		ActionStart(onActionComplete);
 		TargetPosition = ConvertTargetPositionToMiddleOfCell(LevelGrid.Instance.GetWorldPosition(gridPosition));
 		TargetDirection = (TargetPosition - transform.position).normalized;
-		isActionActive = true;
-		unitAnimator.SetBool(AnimationParameterManager.isMoving, true);
+		OnStartMoving?.Invoke();
 	}
 
 	private Vector3 ConvertTargetPositionToMiddleOfCell(Vector3 targetPosition)

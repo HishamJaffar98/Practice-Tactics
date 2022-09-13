@@ -37,6 +37,18 @@ public class GridObject
 		unitList.Add(unit);
 	}
 
+	public Unit GetUnit()
+	{
+		if (HasUnitList())
+		{
+			return unitList[0];
+		}
+		else
+		{
+			return null;
+		}
+	}
+
 	public void RemoveUnit(Unit unit)
 	{
 		unitList.Remove(unit);

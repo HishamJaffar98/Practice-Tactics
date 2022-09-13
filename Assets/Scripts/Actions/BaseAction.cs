@@ -27,5 +27,15 @@ public abstract class BaseAction : MonoBehaviour
         return 1;
     }
 
+    protected void ActionStart(actionDelegate onActionComplete)
+    {
+        isActionActive = true;
+        this.OnActionComplete = onActionComplete;
+    }
 
+    protected void ActionComplete()
+    {
+        isActionActive = false;
+        OnActionComplete();
+    }
 }

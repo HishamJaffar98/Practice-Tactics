@@ -75,10 +75,13 @@ public class ActionSystem : MonoBehaviour
         if (isActionBusy)
             return;
 
-		//if (EventSystem.current.IsPointerOverGameObject())
-		//	return;
+        if (!TurnSystem.Instance.IsPlayerTurn)
+            return;
 
-		if (Input.GetMouseButtonDown(0))
+        //if (EventSystem.current.IsPointerOverGameObject())
+        //	return;
+
+        if (Input.GetMouseButtonDown(0))
         {
             if (TryToGetUnit())
                 return;
@@ -97,6 +100,9 @@ public class ActionSystem : MonoBehaviour
             {
                 if (unit == selectedUnit)
                     return false;
+                if (unit.IsEnemy)
+                    return false;
+
                 SetSelectedUnit(unit);;
                 return true;
             }

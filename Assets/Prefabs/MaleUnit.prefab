@@ -1545,6 +1545,8 @@ GameObject:
   - component: {fileID: 1766610724542088198}
   - component: {fileID: 1676922324}
   - component: {fileID: 3660390862944096182}
+  - component: {fileID: 6472983393607765874}
+  - component: {fileID: 1309231778290947754}
   - component: {fileID: 214824985}
   m_Layer: 6
   m_Name: MaleUnit
@@ -1582,6 +1584,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19404240ff0d3d0469ead07b1bafc6c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isEnemy: 0
   unitSelectVisual: {fileID: 1033001300}
 --- !u!114 &1676922324
 MonoBehaviour:
@@ -1598,7 +1601,6 @@ MonoBehaviour:
   movementSpeed: 10
   rotationSpeed: 10
   moveRange: 2
-  unitAnimator: {fileID: 1860002885753963066}
 --- !u!114 &3660390862944096182
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1612,6 +1614,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spinAmount: 360
+--- !u!114 &6472983393607765874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1766610724542088196}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf37ea6e60553744cbd6fa5d70600749, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shootDistance: 7
+--- !u!114 &1309231778290947754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1766610724542088196}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0727c725d84a796418b0b4521dcaad6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 1860002885753963066}
 --- !u!65 &214824985
 BoxCollider:
   m_ObjectHideFlags: 0

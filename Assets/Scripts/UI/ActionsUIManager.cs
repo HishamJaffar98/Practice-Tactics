@@ -16,6 +16,9 @@ public class ActionsUIManager : MonoBehaviour
 		ActionSystem.Instance.OnSelectedUnitChanged += ActionsUIManager_OnSelectedUnitChanged;
 		ActionSystem.Instance.OnUnitActionChanged += ActionsUIManager_OnSelectedActionChanged;
 		ActionSystem.Instance.OnActionStarted += ActionUIManager_OnActionStarted;
+		TurnSystem.Instance.OnTurnChanged += TurnSystem_OnTurnChanged;
+		Unit.OnAnyActionPointsChanged += Unit_OnAnyActionPointsChanged;
+
 	}
 
 	private void OnDisable()
@@ -23,6 +26,8 @@ public class ActionsUIManager : MonoBehaviour
 		ActionSystem.Instance.OnSelectedUnitChanged -= ActionsUIManager_OnSelectedUnitChanged;
 		ActionSystem.Instance.OnUnitActionChanged -= ActionsUIManager_OnSelectedActionChanged;
 		ActionSystem.Instance.OnActionStarted -= ActionUIManager_OnActionStarted;
+		TurnSystem.Instance.OnTurnChanged -= TurnSystem_OnTurnChanged;
+		Unit.OnAnyActionPointsChanged -= Unit_OnAnyActionPointsChanged;
 	}
 
 	private void ActionsUIManager_OnSelectedUnitChanged()
@@ -42,7 +47,6 @@ public class ActionsUIManager : MonoBehaviour
 		UpdateActionPoints();
 	}
 
-
 	private void CreateUnitActionButtons()
 	{
 		DestroyOldUnitActionButtons();
@@ -55,7 +59,6 @@ public class ActionsUIManager : MonoBehaviour
 			buttonsCurrentlyInContainer.Add(actionButton.GetComponent<ActionButton>());
 		}
 	}
-
 	private void DestroyOldUnitActionButtons()
 	{
 		foreach(Transform buttons in actionButtonsContainer)
@@ -71,11 +74,20 @@ public class ActionsUIManager : MonoBehaviour
 			button.GetComponent<ActionButton>().UpdateSelectedVisual();
 		}
 	}
+
 	private void UpdateActionPoints()
 	{
 		Unit selectedUnit = ActionSystem.Instance.SelectedUnit;
 		actionPointsText.text = "Action Points: " + selectedUnit.GetActionPoints();
 	}
 
+	private void TurnSystem_OnTurnChanged()
+	{
+		UpdateActionPoints();
+	}
 
+	private void Unit_OnAnyActionPointsChanged()
+	{
+		UpdateActionPoints();
+	}
 }
