@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// This class is responsible of handling behaviour of various mouse interactable components
@@ -14,11 +15,23 @@ public class ActionSystem : MonoBehaviour
     public static ActionSystem Instance { get; private set; }
     #endregion
 
+    #region Events
+    public event Action OnSelectedUnitChanged;
+    public event Action OnUnitActionChanged;
+    public event Action<bool> OnBusyChanged;
+    public event Action OnActionStarted;
+    #endregion
+
+    #region Variables
+    private bool isActionBusy=false;
+    #endregion
+
     #region Cached Components
     private Unit selectedUnit;
-	#endregion
+    private BaseAction selectedAction;
+    #endregion
 
-	#region Properties
+    #region Properties
     public Unit SelectedUnit
 	{
         get
@@ -26,14 +39,25 @@ public class ActionSystem : MonoBehaviour
             return selectedUnit;
 		}
 	}
+
+    public BaseAction SelectedAction
+	{
+        get
+		{
+            return selectedAction;
+		}
+	}
+
+	public void SetSelectedAction(BaseAction action)
+	{
+		selectedAction = action;
+        OnUnitActionChanged?.Invoke();
+	}
 	#endregion
 
-	#region Events
-	public event Action<Unit> OnSelectedUnitChanged;
-    #endregion
 
-    #region Unity Cycle Fucntions
-    private void Awake()
+	#region Unity Cycle Fucntions
+	private void Awake()
 	{
 		if(Instance!=null)
 		{
@@ -46,44 +70,72 @@ public class ActionSystem : MonoBehaviour
 		}
 	}
 
-	private void Update()
-	{
-		if(Input.GetMouseButtonDown(0))
-		{
-            if(TryToGetUnit())
-		    {
-                return;
-		    }
-            if(selectedUnit!=null)
-			{
-                selectedUnit.MoveActionComponent.SetMovementParameters(MouseInteractableDetector.Instance.GetPosition());
-            }
-        }
-	}
-	#endregion
+    private void Update()
+    {
+        if (isActionBusy)
+            return;
 
-	#region Private Functions
-	private bool TryToGetUnit()
-	{
+		//if (EventSystem.current.IsPointerOverGameObject())
+		//	return;
+
+		if (Input.GetMouseButtonDown(0))
+        {
+            if (TryToGetUnit())
+                return;
+            HandleSelectedAction();
+        }
+    }
+    #endregion
+
+    #region Private Functions
+    private bool TryToGetUnit()
+    {
         GameObject interactableObject = MouseInteractableDetector.Instance.GetValidObjectInteractedByMouse();
-        if(interactableObject)
-		{
+        if (interactableObject)
+        {
             if (interactableObject.TryGetComponent<Unit>(out Unit unit))
             {
-                SelectUnit(unit);
+                if (unit == selectedUnit)
+                    return false;
+                SetSelectedUnit(unit);;
                 return true;
             }
         }
         return false;
     }
-
-    public void SelectUnit(Unit unit)
+    private void SetSelectedUnit(Unit unit)
     {
-        if(selectedUnit!=unit || selectedUnit==null)
-		{
-            selectedUnit = unit;
-            OnSelectedUnitChanged?.Invoke(unit);
+        selectedUnit = unit;
+		SetSelectedAction(unit.MoveActionComponent);
+        OnSelectedUnitChanged?.Invoke();
+    }
+
+    private void HandleSelectedAction()
+    {
+        GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(MouseInteractableDetector.Instance.GetPosition());
+        if (!selectedAction.IsValidActionGridPosition(mouseGridPosition))
+        {
+            return;
         }
+
+        if (!selectedUnit.TrySpendActionPointsToTakeAction(selectedAction))
+        {
+            return;
+        }
+        SetBusy();
+        selectedAction.TakeAction(mouseGridPosition, ClearBusy);
+        OnActionStarted?.Invoke();
+    }
+
+    private void SetBusy()
+    {
+        isActionBusy = true;
+        OnBusyChanged?.Invoke(isActionBusy);
+    }
+    private void ClearBusy()
+	{
+        isActionBusy = false;
+        OnBusyChanged?.Invoke(isActionBusy);
     }
     #endregion
 }

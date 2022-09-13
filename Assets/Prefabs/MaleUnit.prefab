@@ -1544,6 +1544,7 @@ GameObject:
   - component: {fileID: 1766610724542088199}
   - component: {fileID: 1766610724542088198}
   - component: {fileID: 1676922324}
+  - component: {fileID: 3660390862944096182}
   - component: {fileID: 214824985}
   m_Layer: 6
   m_Name: MaleUnit
@@ -1598,6 +1599,19 @@ MonoBehaviour:
   rotationSpeed: 10
   moveRange: 2
   unitAnimator: {fileID: 1860002885753963066}
+--- !u!114 &3660390862944096182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1766610724542088196}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82207460e5096d4469ec4f0ef4e11ee9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spinAmount: 360
 --- !u!65 &214824985
 BoxCollider:
   m_ObjectHideFlags: 0

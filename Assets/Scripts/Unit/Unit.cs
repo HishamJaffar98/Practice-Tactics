@@ -11,33 +11,29 @@ public class Unit : MonoBehaviour
 	private GridPosition currentGridPosition;
 	#endregion
 
-	#region Variables
-	bool isSelected = false;
-	#endregion
+	private int actionPoints = 2;
 
 	#region Referenced Components
 	[SerializeField] UnitSelectVisual unitSelectVisual;
 	private MoveAction moveAction;
+	private SpinAction spinAction;
+	private BaseAction[] actionArray;
 	#endregion
 
 	#region Properties
-	public bool IsSelected
-	{
-		set
-		{
-			isSelected = value;
-		}
-		get
-		{
-			return isSelected;
-		}
-	}
-
 	public MoveAction MoveActionComponent
 	{
 		get
 		{
 			return moveAction;
+		}
+	}
+
+	public SpinAction SpinActionComponent
+	{
+		get
+		{
+			return spinAction;
 		}
 	}
 
@@ -48,18 +44,28 @@ public class Unit : MonoBehaviour
 			return currentGridPosition;
 		}
 	}
+
+	public BaseAction[] ActionArray
+	{
+		get
+		{
+			return actionArray;
+		}
+	}
 	#endregion
 
 	#region Unity Cycle Fucntions
 
 	private void OnEnable()
 	{
-		ActionSystem.Instance.OnSelectedUnitChanged += SetUnitAsSelected;
+		ActionSystem.Instance.OnSelectedUnitChanged += ToggleUnitSelectVisual;
 	}
 	private void Awake()
 	{
 		currentGridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
 		moveAction = GetComponent<MoveAction>();
+		spinAction = GetComponent<SpinAction>();
+		actionArray = GetComponents<BaseAction>();
 	}
 
 	private void Start()
@@ -79,27 +85,56 @@ public class Unit : MonoBehaviour
 
 	private void OnDisable()
 	{
-		ActionSystem.Instance.OnSelectedUnitChanged -= SetUnitAsSelected;
+		ActionSystem.Instance.OnSelectedUnitChanged -= ToggleUnitSelectVisual;
 	}
 
+	private void SpendActionPoints(int amount)
+	{
+		actionPoints -= amount;
+	}
 	#endregion
 
 	#region Private Functions
-	private void SetUnitAsSelected(Unit unit)
+	private void ToggleUnitSelectVisual()
 	{
-		if(unit==this)
+		if(ActionSystem.Instance.SelectedUnit==this)
 		{
-			IsSelected = true;
 			unitSelectVisual.ToggleSelectedVisual(true);
 		}
 		else
 		{
-			IsSelected = false;
 			unitSelectVisual.ToggleSelectedVisual(false);
 		}
 	}
 	#endregion
 
-	#region Public Functions
-	#endregion
+	public bool TrySpendActionPointsToTakeAction(BaseAction baseAction)
+	{
+		if (CanSpendActionPointsToTakeAction(baseAction))
+		{
+			SpendActionPoints(baseAction.GetActionPointsCost());
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	public bool CanSpendActionPointsToTakeAction(BaseAction baseAction)
+	{
+		if (actionPoints >= baseAction.GetActionPointsCost())
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	public int GetActionPoints()
+	{
+		return actionPoints;
+	}
 }

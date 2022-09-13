@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MoveAction : MonoBehaviour
+public class MoveAction : BaseAction
 {
 	#region Variables
 	[SerializeField] private float movementSpeed = 10f;
@@ -12,26 +12,27 @@ public class MoveAction : MonoBehaviour
 	#endregion
 
 	#region Structs
-	enum MovementStates { Moving, Idle };
-	private MovementStates currentMovementState = MovementStates.Idle;
 	private Vector3 targetPosition;
 	private Vector3 targetDirection;
 	#endregion 
 
 	#region Cached Components
 	[SerializeField] private Animator unitAnimator;
-	private Unit unit;
 	#endregion
 
 	#region Unity Cycle Functions
-	private void Awake()
-	{
-		unit = GetComponent<Unit>();
-	}
-
 	private void Start()
 	{
 		ValidGridPositionList=GetValidActionGridPositionList();
+	}
+
+	private void Update()
+	{
+		if (!isActionActive)
+		{
+			return;
+		}
+		Move();
 	}
 	#endregion
 
@@ -63,56 +64,23 @@ public class MoveAction : MonoBehaviour
 	public List<GridPosition> ValidGridPositionList { get => validGridPositionList; set => validGridPositionList = value; }
 	#endregion
 
-	#region Unity Cycle Fucntions
-	void Update()
-	{
-		Move();
-	}
-	#endregion
-
 	#region Private Functions
 	private void Move()
 	{
-		if (currentMovementState == MovementStates.Moving)
+		transform.position = Vector3.MoveTowards(transform.position, TargetPosition, movementSpeed * Time.deltaTime);
+		transform.forward = Vector3.Lerp(transform.forward, TargetDirection, rotationSpeed * Time.deltaTime);
+		if (Vector3.Distance(transform.position, TargetPosition) == 0)
 		{
-			transform.position = Vector3.MoveTowards(transform.position, TargetPosition, movementSpeed * Time.deltaTime);
-			transform.forward = Vector3.Lerp(transform.forward, TargetDirection, rotationSpeed * Time.deltaTime);
-			if (Vector3.Distance(transform.position, TargetPosition) == 0)
-			{
-				currentMovementState = MovementStates.Idle;
-				unitAnimator.SetBool(AnimationParameterManager.isMoving, false);
-				ValidGridPositionList = GetValidActionGridPositionList();
-			}
+			unitAnimator.SetBool(AnimationParameterManager.isMoving, false);
+			isActionActive = false;
+			ValidGridPositionList = GetValidActionGridPositionList();
+			OnActionComplete?.Invoke();
 		}
-	}
-
-	private bool isTargetPositionInValidActionGridPositionList(Vector3 targetPosition)
-	{
-		GridPosition targetGridPosition = LevelGrid.Instance.GetGridPosition(targetPosition);
-		if (ValidGridPositionList.Contains(targetGridPosition))
-		{
-			return true;
-		}
-		return false;
 	}
 	#endregion
 
 	#region Public Functions
-	public void SetMovementParameters(Vector3 targetPosition)
-	{
-		if (isTargetPositionInValidActionGridPositionList(targetPosition))
-		{
-			if (currentMovementState == MovementStates.Idle)
-			{
-				TargetPosition = new Vector3(targetPosition.x, 0f, targetPosition.z);
-				TargetDirection = (TargetPosition - transform.position).normalized;
-				unitAnimator.SetBool(AnimationParameterManager.isMoving, true);
-				currentMovementState = MovementStates.Moving;
-			}
-		}
-	}
-
-	public List<GridPosition> GetValidActionGridPositionList()
+	public override List<GridPosition> GetValidActionGridPositionList()
 	{
 		List<GridPosition> validActionGridPositionList = new List<GridPosition>();
 		GridPosition unitGridPosition = unit.UnitCurrentGridPosition;
@@ -139,5 +107,24 @@ public class MoveAction : MonoBehaviour
 		}
 		return validActionGridPositionList;
 	}
+	public override void TakeAction(GridPosition gridPosition, actionDelegate onActionComplete)
+	{
+		this.OnActionComplete = onActionComplete;
+		TargetPosition = ConvertTargetPositionToMiddleOfCell(LevelGrid.Instance.GetWorldPosition(gridPosition));
+		TargetDirection = (TargetPosition - transform.position).normalized;
+		isActionActive = true;
+		unitAnimator.SetBool(AnimationParameterManager.isMoving, true);
+	}
+
+	private Vector3 ConvertTargetPositionToMiddleOfCell(Vector3 targetPosition)
+	{
+		return new Vector3(targetPosition.x + 1f, 0, targetPosition.z + 1f);
+	}
+
+	public override string GetActionName()
+	{
+		return "Move";
+	}
+
 	#endregion
 }
