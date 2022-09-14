@@ -6,9 +6,7 @@ using System;
 public class LevelGrid : MonoBehaviour
 {
     public static LevelGrid Instance { get; private set; }
-
     public event Action OnAnyUnitMovedGridPosition;
-
     private GridSystem<GridObject> newGridSystem;
     [SerializeField] private Transform gridDebugObjectPrefab;
     [SerializeField] private int width;
@@ -83,8 +81,10 @@ public class LevelGrid : MonoBehaviour
 
     public GridPosition GetGridPosition(Vector3 worldPosition) => newGridSystem.GetGridPosition(worldPosition);
     public Vector3 GetWorldPosition(GridPosition gridPosition) => newGridSystem.GetWorldPosition(gridPosition);
+    public Vector3 GetWorldPositionForEntity(GridPosition gridPosition) => newGridSystem.GetWorldPositionForEntity(gridPosition);
     public bool IsValidGridPosition(GridPosition gridPosition) => newGridSystem.IsValidGridPosition(gridPosition);
     public int GetWidth() => newGridSystem.Width;
     public int GetHeight() => newGridSystem.Height;
+    public float GetCellSize() => newGridSystem.CellSize;
 
 }

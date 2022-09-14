@@ -10,7 +10,7 @@ public class Unit : MonoBehaviour
 	private GridPosition currentGridPosition;
 	#endregion
 
-	private const int ACTION_POINTS_MAX = 2;
+	private const int ACTION_POINTS_MAX = 4;
 	private int actionPoints = ACTION_POINTS_MAX;
 	[SerializeField] private bool isEnemy;
 

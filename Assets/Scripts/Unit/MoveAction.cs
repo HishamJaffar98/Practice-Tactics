@@ -5,133 +5,114 @@ using UnityEngine;
 
 public class MoveAction : BaseAction
 {
-	#region Variables
-	[SerializeField] private float movementSpeed = 10f;
-	[SerializeField] private float rotationSpeed = 10f;
-	[SerializeField] private int moveRange = 4;
-	private List<GridPosition> validGridPositionList;
-	#endregion
 
-	#region Structs
-	private Vector3 targetPosition;
-	private Vector3 targetDirection;
-	#endregion
+    public event Action OnStartMoving;
+    public event Action OnStopMoving;
+    [SerializeField] float rotateSpeed = 10f;
+    [SerializeField] float moveSpeed = 4f;
+    [SerializeField] private int maxMoveDistance = 4;
+    private float stoppingDistance = 0.1f;
+    private List<Vector3> positionList;
+    private int currentPositionIndex;
 
-	public event Action OnStartMoving;
-	public event Action OnStopMoving;
+    private void Update()
+    {
+        if (!isActionActive)
+        {
+            return;
+        }
 
-	#region Unity Cycle Functions
-	private void Start()
-	{
-		ValidGridPositionList=GetValidActionGridPositionList();
-	}
+        Vector3 targetPosition = positionList[currentPositionIndex];
+        Vector3 moveDirection = (targetPosition - transform.position).normalized;
+        transform.forward = Vector3.Lerp(transform.forward, moveDirection, Time.deltaTime * rotateSpeed);
+        if (Vector3.Distance(transform.position, targetPosition) > stoppingDistance)
+        {
+            float moveSpeed = 4f;
+            transform.position += moveDirection * moveSpeed * Time.deltaTime;
+        }
+        else
+        {
+            currentPositionIndex++;
+            if (currentPositionIndex >= positionList.Count)
+            {
+                OnStopMoving?.Invoke();
 
-	private void Update()
-	{
-		if (!isActionActive)
-		{
-			return;
-		}
-		Move();
-	}
-	#endregion
+                ActionComplete();
+            }
+        }
+    }
 
-	#region Properties
-	public Vector3 TargetPosition
-	{
-		set
-		{
-			targetPosition = value;
-		}
-		get
-		{
-			return targetPosition;
-		}
-	}
 
-	public Vector3 TargetDirection
-	{
-		set
-		{
-			targetDirection = value;
-		}
-		get
-		{
-			return targetDirection;
-		}
-	}
+    public override void TakeAction(GridPosition gridPosition, BaseAction.actionDelegate onActionComplete)
+    {
+        List<GridPosition> pathGridPositionList = Pathfinding.Instance.FindPath(unit.UnitCurrentGridPosition, gridPosition, out int pathLength);
+        currentPositionIndex = 0;
+        positionList = new List<Vector3>();
+        OnStartMoving?.Invoke();
+        foreach (GridPosition pathGridPosition in pathGridPositionList)
+        {
+            positionList.Add(LevelGrid.Instance.GetWorldPositionForEntity(pathGridPosition));
+        }
+        ActionStart(onActionComplete);
+    }
 
-	public List<GridPosition> ValidGridPositionList { get => validGridPositionList; set => validGridPositionList = value; }
-	#endregion
+    public override List<GridPosition> GetValidActionGridPositionList()
+    {
+        List<GridPosition> validGridPositionList = new List<GridPosition>();
+        GridPosition unitGridPosition = unit.UnitCurrentGridPosition;
+        for (int x = -maxMoveDistance; x <= maxMoveDistance; x++)
+        {
+            for (int z = -maxMoveDistance; z <= maxMoveDistance; z++)
+            {
+                GridPosition offsetGridPosition = new GridPosition(x, z);
+                GridPosition testGridPosition = unitGridPosition + offsetGridPosition;
 
-	#region Private Functions
-	private void Move()
-	{
-		transform.position = Vector3.MoveTowards(transform.position, TargetPosition, movementSpeed * Time.deltaTime);
-		transform.forward = Vector3.Lerp(transform.forward, TargetDirection, rotationSpeed * Time.deltaTime);
-		if (Vector3.Distance(transform.position, TargetPosition) == 0)
-		{
-			OnStopMoving?.Invoke();
-			ActionComplete();
-			ValidGridPositionList = GetValidActionGridPositionList();
-		}
-	}
-	#endregion
+                if (!LevelGrid.Instance.IsValidGridPosition(testGridPosition))
+                {
+                    continue;
+                }
+                if (unitGridPosition == testGridPosition)
+                {
+                    continue;
+                }
 
-	#region Public Functions
-	public override List<GridPosition> GetValidActionGridPositionList()
-	{
-		List<GridPosition> validActionGridPositionList = new List<GridPosition>();
-		GridPosition unitGridPosition = unit.UnitCurrentGridPosition;
-		for (int x = -moveRange; x <= moveRange; x++)
-		{
-			for (int z = -moveRange; z <= moveRange; z++)
-			{
-				GridPosition offsetGridPosition = new GridPosition(x, z);
-				GridPosition testGridPosition = unitGridPosition + offsetGridPosition;
-				if (!LevelGrid.Instance.IsValidGridPosition(testGridPosition))
-				{
-					continue;
-				}
-				if (unitGridPosition == testGridPosition)
-				{
-					continue;
-				}
-				if (LevelGrid.Instance.HasUnitOnGridPosition(testGridPosition))
-				{
-					continue;
-				}
-				validActionGridPositionList.Add(testGridPosition);
-			}
-		}
-		return validActionGridPositionList;
-	}
-	public override void TakeAction(GridPosition gridPosition, actionDelegate onActionComplete)
-	{
-		TargetPosition = ConvertTargetPositionToMiddleOfCell(LevelGrid.Instance.GetWorldPosition(gridPosition));
-		TargetDirection = (TargetPosition - transform.position).normalized;
-		OnStartMoving?.Invoke();
-		ActionStart(onActionComplete);
-	}
+                if (LevelGrid.Instance.HasUnitOnGridPosition(testGridPosition))
+                {
+                    continue;
+                }
+                if (!Pathfinding.Instance.IsWalkableGridPosition(testGridPosition))
+                {
+                    continue;
+                }
+                if (!Pathfinding.Instance.HasPath(unitGridPosition, testGridPosition))
+                {
+                    continue;
+                }
 
-	private Vector3 ConvertTargetPositionToMiddleOfCell(Vector3 targetPosition)
-	{
-		return new Vector3(targetPosition.x + 1f, 0, targetPosition.z + 1f);
-	}
+                int pathfindingDistanceMultiplier = 10;
+                if (Pathfinding.Instance.GetPathLength(unitGridPosition, testGridPosition) > maxMoveDistance * pathfindingDistanceMultiplier)
+                {
+                    continue;
+                }
+                validGridPositionList.Add(testGridPosition);
+            }
+        }
+        return validGridPositionList;
+    }
 
-	public override string GetActionName()
-	{
-		return "Move";
-	}
-	public override EnemyAIAction GetEnemyAIAction(GridPosition gridPosition)
-	{
-		int targetCountAtGridPosition = unit.GetAction<ShootAction>().GetTargetCountAtPosition(gridPosition);
-		return new EnemyAIAction
-		{
-			gridPosition = gridPosition,
-			actionValue = targetCountAtGridPosition * 10,
-		};
-	}
 
-	#endregion
+    public override string GetActionName()
+    {
+        return "Move";
+    }
+
+    public override EnemyAIAction GetEnemyAIAction(GridPosition gridPosition)
+    {
+        int targetCountAtGridPosition = unit.GetAction<ShootAction>().GetTargetCountAtPosition(gridPosition);
+        return new EnemyAIAction
+        {
+            gridPosition = gridPosition,
+            actionValue = targetCountAtGridPosition * 10,
+        };
+    }
 }

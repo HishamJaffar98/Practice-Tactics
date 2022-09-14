@@ -23,9 +23,9 @@ public class Pathfinding : MonoBehaviour
             return;
         }
         Instance = this;
-        gridSystem = new GridSystem<PathNode>(10, 10, 2f,
+        gridSystem = new GridSystem<PathNode>(width, height, cellSize,
             (GridSystem<PathNode> g, GridPosition gridPosition) => new PathNode(gridPosition));
-        gridSystem.CreateDebugObjects(gridDebugObjectPrefab);
+        //gridSystem.CreateDebugObjects(gridDebugObjectPrefab);
     }
     private List<GridPosition> CalculatePath(PathNode endNode)
     {
@@ -128,7 +128,7 @@ public class Pathfinding : MonoBehaviour
         gridSystem = new GridSystem<PathNode>(width, height, cellSize,
             (GridSystem<PathNode> g, GridPosition gridPosition) => new PathNode(gridPosition));
 
-        gridSystem.CreateDebugObjects(gridDebugObjectPrefab);
+        //gridSystem.CreateDebugObjects(gridDebugObjectPrefab);
 
         for (int x = 0; x < width; x++)
         {
@@ -136,7 +136,9 @@ public class Pathfinding : MonoBehaviour
             {
                 GridPosition gridPosition = new GridPosition(x, z);
                 Vector3 worldPosition = LevelGrid.Instance.GetWorldPosition(gridPosition);
-                float raycastOffsetDistance = 5f;
+                worldPosition = new Vector3(worldPosition.x+cellSize/2,0,worldPosition.z+cellSize/2);
+                float raycastOffsetDistance = 1f;
+                Debug.DrawRay(worldPosition + Vector3.down * raycastOffsetDistance, Vector3.up, Color.red, 10000f);
                 if (Physics.Raycast(
                     worldPosition + Vector3.down * raycastOffsetDistance,
                     Vector3.up,
@@ -149,7 +151,7 @@ public class Pathfinding : MonoBehaviour
         }
 
     }
-    public List<GridPosition> FindPath(GridPosition startGridPosition, GridPosition endGridPosition)
+    public List<GridPosition> FindPath(GridPosition startGridPosition, GridPosition endGridPosition, out int pathLength)
     {
         List<PathNode> openList = new List<PathNode>();
         List<PathNode> closedList = new List<PathNode>();
@@ -177,7 +179,7 @@ public class Pathfinding : MonoBehaviour
             PathNode currentNode = GetLowestFCostPathNode(openList);
             if (currentNode == endNode)
             {
-                // Reached final node
+                pathLength = endNode.FCost;
                 return CalculatePath(endNode);
             }
             openList.Remove(currentNode);
@@ -207,6 +209,7 @@ public class Pathfinding : MonoBehaviour
                 }
             }
         }
+        pathLength = 0;
         return null;
     }
 
@@ -218,4 +221,21 @@ public class Pathfinding : MonoBehaviour
         int remaining = Mathf.Abs(xDistance - zDistance);
         return MOVE_DIAGONAL_COST * Mathf.Min(xDistance, zDistance) + MOVE_STRAIGHT_COST * remaining;
     }
+
+    public bool IsWalkableGridPosition(GridPosition gridPosition)
+    {
+        return gridSystem.GetGridObject(gridPosition).IsWalkable;
+    }
+
+    public bool HasPath(GridPosition startGridPosition, GridPosition endGridPosition)
+    {
+        return FindPath(startGridPosition, endGridPosition, out int pathLength) != null;
+    }
+
+    public int GetPathLength(GridPosition startGridPosition, GridPosition endGridPosition)
+    {
+        FindPath(startGridPosition, endGridPosition, out int pathLength);
+        return pathLength;
+    }
+
 }

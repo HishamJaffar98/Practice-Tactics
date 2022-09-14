@@ -85,7 +85,8 @@ public class ActionSystem : MonoBehaviour
         {
             if (TryToGetUnit())
                 return;
-            HandleSelectedAction();
+            if(selectedAction!=null)
+                HandleSelectedAction();
         }
     }
     #endregion

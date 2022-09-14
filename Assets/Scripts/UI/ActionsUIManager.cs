@@ -78,7 +78,10 @@ public class ActionsUIManager : MonoBehaviour
 	private void UpdateActionPoints()
 	{
 		Unit selectedUnit = ActionSystem.Instance.SelectedUnit;
-		actionPointsText.text = "Action Points: " + selectedUnit.GetActionPoints();
+		if(selectedUnit!=null)
+		{
+			actionPointsText.text = "Action Points: " + selectedUnit.GetActionPoints();
+		}
 	}
 
 	private void TurnSystem_OnTurnChanged()

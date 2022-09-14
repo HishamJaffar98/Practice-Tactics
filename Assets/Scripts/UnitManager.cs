@@ -18,7 +18,6 @@ public class UnitManager : MonoBehaviour
     {
         if (Instance != null)
         {
-            Debug.LogError("There's more than one UnitManager! " + transform + " - " + Instance);
             Destroy(gameObject);
             return;
         }
@@ -43,10 +42,12 @@ public class UnitManager : MonoBehaviour
 
         if (unit.IsEnemy)
         {
+            Debug.Log("Enemy here");
             enemyUnitList.Add(unit);
         }
         else
         {
+            Debug.Log("Player here");
             friendlyUnitList.Add(unit);
         }
     }

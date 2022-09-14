@@ -82,11 +82,11 @@ public class GridSystem<TGridObject>
 				Debug.DrawLine(GetWorldPosition(newGridPos), GetWorldPosition(newGridPos) + Vector3.forward*CellSize, Color.red, 10000);
 				if(x==Width-1)
 				{
-					Debug.DrawLine(GetWorldPosition(new GridPosition(x+1,z)), GetWorldPosition(new GridPosition(x + 1, z)) + Vector3.forward * CellSize, Color.red, 10000);
+					Debug.DrawLine(GetWorldPosition(new GridPosition(x+ (int)CellSize/2, z)), GetWorldPosition(new GridPosition(x + (int)CellSize / 2, z)) + Vector3.forward * CellSize, Color.red, 10000);
 				}
 				if(z==Height-1)
 				{
-					Debug.DrawLine(GetWorldPosition(new GridPosition(x, z + 1)), GetWorldPosition(new GridPosition(x, z + 1)) + Vector3.right * CellSize, Color.red, 10000);
+					Debug.DrawLine(GetWorldPosition(new GridPosition(x, z + (int)CellSize / 2)), GetWorldPosition(new GridPosition(x, z + (int)CellSize / 2)) + Vector3.right * CellSize, Color.red, 10000);
 				}
 			}
 		}
@@ -96,7 +96,13 @@ public class GridSystem<TGridObject>
 	#region Public Functions
 	public Vector3 GetWorldPosition(GridPosition gridPosition)
 	{
-		return new Vector3(gridPosition.x, 0f, gridPosition.z) * CellSize;
+		 return new Vector3(gridPosition.x, 0f, gridPosition.z) * CellSize;
+	}
+
+	public Vector3 GetWorldPositionForEntity(GridPosition gridPosition)
+	{
+		Vector3 worldPos = new Vector3(gridPosition.x, 0f, gridPosition.z) * CellSize;
+		return new Vector3(worldPos.x + (cellSize/2),0, worldPos.z+(cellSize/2));
 	}
 
 	public GridPosition GetGridPosition (Vector3 worldPosition)
@@ -104,18 +110,18 @@ public class GridSystem<TGridObject>
 		return new GridPosition(Mathf.FloorToInt(worldPosition.x / CellSize), Mathf.FloorToInt(worldPosition.z / CellSize));
 	}
 
-	public void CreateDebugObjects(Transform debugPrefab)
-	{
-		for (int x = 0; x < Width; x++)
-		{
-			for (int z = 0; z < Height; z++)
-			{
-				GridPosition newGridPos = new GridPosition(x, z);
-				Transform newGridDebugObject = GameObject.Instantiate(debugPrefab, GetWorldPosition(newGridPos), Quaternion.identity);
-				newGridDebugObject.GetComponent<GridDebugObject>().SetGridObject(GetGridObject(newGridPos));
-			}
-		}
-	}
+	//public void CreateDebugObjects(Transform debugPrefab)
+	//{
+	//	for (int x = 0; x < Width; x++)
+	//	{
+	//		for (int z = 0; z < Height; z++)
+	//		{
+	//			GridPosition newGridPos = new GridPosition(x, z);
+	//			Transform newGridDebugObject = GameObject.Instantiate(debugPrefab, GetWorldPosition(newGridPos), Quaternion.identity);
+	//			newGridDebugObject.GetComponent<GridDebugObject>().SetGridObject(GetGridObject(newGridPos));
+	//		}
+	//	}
+	//}
 
 	public TGridObject GetGridObject(GridPosition gridPosition)
 	{

@@ -66,6 +66,7 @@ public class EnemyAI : MonoBehaviour
     {
         if (!TurnSystem.Instance.IsPlayerTurn)
         {
+            Debug.Log("Enemy Turn");
             state = State.TakingTurn;
             timer = 2f;
         }
@@ -73,8 +74,10 @@ public class EnemyAI : MonoBehaviour
 
     private bool TryTakeEnemyAIAction(BaseAction.actionDelegate onEnemyAIActionComplete)
     {
+       
         foreach (Unit enemyUnit in UnitManager.Instance.GetEnemyUnitList())
         {
+            Debug.Log("Enemy Taking Action");
             if (TryTakeEnemyAIAction(enemyUnit, onEnemyAIActionComplete))
             {
                 return true;
